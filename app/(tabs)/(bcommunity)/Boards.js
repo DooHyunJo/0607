@@ -1,34 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  Button,
-  TextInput,
-  FlatList,
-  ScrollView,
-  Modal,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Button, TextInput, FlatList, ScrollView, Modal, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Board() {
+  const navigation = useNavigation();
+
   const [posts, setPosts] = useState([]);
-  const [newCategory, setNewCategory] = useState("");
-  const [newTitle, setNewTitle] = useState("");
-  const [TradeItem, setTradeItem] = useState("");
-  const [PurchaseTime, setPurchaseTime] = useState("");
-  const [newContent, setNewContent] = useState("");
-  const [newKeywords, setNewKeywords] = useState("");
+  const [newCategory, setNewCategory] = useState('');
+  const [newTitle, setNewTitle] = useState('');
+  const [TradeItem, setTradeItem] = useState('');
+  const [PurchaseTime, setPurchaseTime] = useState('');
+  const [newContent, setNewContent] = useState('');
+  const [newKeywords, setNewKeywords] = useState('');
   const [editingPost, setEditingPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
   const [isGuideModalVisible, setGuideModalVisible] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState('');
   const [filteredPosts, setFilteredPosts] = useState([]);
 
   const postsRef = useRef([]);
@@ -38,14 +28,7 @@ export default function Board() {
   }, [posts]);
 
   const addPost = () => {
-    if (
-      newCategory &&
-      newTitle &&
-      newContent &&
-      newKeywords &&
-      TradeItem &&
-      PurchaseTime
-    ) {
+    if (newCategory && newTitle && newContent && newKeywords && TradeItem && PurchaseTime) {
       const newPost = {
         id: Date.now(),
         category: newCategory,
@@ -58,12 +41,12 @@ export default function Board() {
         timestamp: Date.now(),
       };
       setPosts([...posts, newPost]);
-      setNewCategory("");
-      setTradeItem("");
-      setPurchaseTime("");
-      setNewTitle("");
-      setNewContent("");
-      setNewKeywords("");
+      setNewCategory('');
+      setTradeItem('');
+      setPurchaseTime('');
+      setNewTitle('');
+      setNewContent('');
+      setNewKeywords('');
       setImage(null);
       setModalVisible(false);
     }
@@ -99,12 +82,12 @@ export default function Board() {
       );
       setPosts(updatedPosts);
       setEditingPost(null);
-      setNewCategory("");
-      setNewTitle("");
-      setTradeItem("");
-      setPurchaseTime("");
-      setNewContent("");
-      setNewKeywords("");
+      setNewCategory('');
+      setNewTitle('');
+      setTradeItem('');
+      setPurchaseTime('');
+      setNewContent('');
+      setNewKeywords('');
       setImage(null);
       setModalVisible(false);
     }
@@ -112,12 +95,12 @@ export default function Board() {
 
   const cancelEdit = () => {
     setEditingPost(null);
-    setNewCategory("");
-    setNewTitle("");
-    setNewContent("");
-    setTradeItem("");
-    setPurchaseTime("");
-    setNewKeywords("");
+    setNewCategory('');
+    setNewTitle('');
+    setNewContent('');
+    setTradeItem('');
+    setPurchaseTime('');
+    setNewKeywords('');
     setImage(null);
     setModalVisible(false);
   };
@@ -138,17 +121,19 @@ export default function Board() {
       quality: 1,
     });
 
+
     if (!result.cancelled) {
       setImage(result.assets[0].uri);
     }
   };
 
   const getPermission = async () => {
-    if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("권한이 필요합니다.");
+    if (Platform.OS !== 'web') {
+      const {
+        status,
+      } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        alert('권한이 필요합니다.');
         return false;
       }
       return true;
@@ -156,12 +141,8 @@ export default function Board() {
   };
 
   const searchFilter = (item) => {
-    const titleMatch = item.title
-      .toLowerCase()
-      .includes(searchKeyword.toLowerCase());
-    const contentMatch = item.content
-      .toLowerCase()
-      .includes(searchKeyword.toLowerCase());
+    const titleMatch = item.title.toLowerCase().includes(searchKeyword.toLowerCase());
+    const contentMatch = item.content.toLowerCase().includes(searchKeyword.toLowerCase());
     return titleMatch || contentMatch;
   };
 
@@ -179,15 +160,7 @@ export default function Board() {
       />
 
       <TouchableOpacity
-        style={[
-          styles.searchInput,
-          {
-            marginTop: 0,
-            marginBottom: 10,
-            backgroundColor: "lightgray",
-            padding: 10,
-          },
-        ]}
+        style={[styles.searchInput, { marginTop: 0, marginBottom: 10, backgroundColor: 'lightgray', padding: 10 }]}
         onPress={() => setGuideModalVisible(true)}
       >
         <Text>🏴 커뮤니티 사용 가이드</Text>
@@ -200,7 +173,7 @@ export default function Board() {
           <View style={styles.flatListItem}>
             <TouchableOpacity
               onPress={() => {
-                router.navigate("Detail", {
+                navigation.navigate('Detail', {
                   title: item.title,
                   category: item.category,
                   keywords: item.keywords,
@@ -211,96 +184,45 @@ export default function Board() {
                   timestamp: item.timestamp,
                 });
               }}
-              onLongPress={() =>
-                setEditingItem(editingItem === item ? null : item)
-              }
+              onLongPress={() => setEditingItem(editingItem === item ? null : item)}
             >
-              <View style={{ flexDirection: "row" }}>
-                {item.image && (
-                  <Image
-                    source={{ uri: item.image }}
-                    style={{
-                      width: 80,
-                      height: 80,
-                      marginRight: 10,
-                      marginBottom: 0,
-                    }}
-                  />
-                )}
+              <View style={{ flexDirection: 'row' }}>
+                {item.image && <Image source={{ uri: item.image }} style={{ width: 80, height: 80, marginRight: 10, marginBottom: 0}} />}
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                    {item.title}
-                  </Text>
-                  <Text>
-                    <Text style={{ color: "gray", fontWeight: "bold" }}>
-                      교환 목록:
-                    </Text>{" "}
-                    {item.trade}
-                  </Text>
-                  <Text numberOfLines={1} ellipsizeMode="tail">
-                    {item.content}
-                  </Text>
-                  <Text style={{ color: "gray", fontSize: 12 }}>
-                    {formatDate(item.timestamp)}
-                  </Text>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.title}</Text>
+                  <Text><Text style={{ color: 'gray', fontWeight: 'bold' }}>교환 목록:</Text> {item.trade}</Text>
+                  <Text numberOfLines={1} ellipsizeMode="tail">{item.content}</Text>
+                  <Text style={{ color: 'gray', fontSize: 12 }}>{formatDate(item.timestamp)}</Text>
                 </View>
               </View>
             </TouchableOpacity>
             {editingItem === item && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Button
-                  title="수정"
-                  onPress={() => editPost(item)}
-                  color="#8A2BE2"
-                />
-                <Button
-                  title="삭제"
-                  onPress={() => deletePost(item.id)}
-                  color="#8A2BE2"
-                />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Button title="수정" onPress={() => editPost(item)} color="#8A2BE2" />
+                <Button title="삭제" onPress={() => deletePost(item.id)} color="#8A2BE2" />
               </View>
             )}
           </View>
         )}
       />
 
-      <View
-        style={{
-          position: "absolute",
-          bottom: 20,
-          left: 0,
-          right: 0,
-          paddingHorizontal: 20,
-        }}
-      >
-        <Button
-          title="작성"
-          onPress={() => setModalVisible(true)}
-          color="#8A2BE2"
-        />
+      <View style={{ position: 'absolute', bottom: 20, left: 0, right: 0, paddingHorizontal: 20 }}>
+        <Button title="작성" onPress={() => setModalVisible(true)} color="#8A2BE2"/>
       </View>
 
-      <Modal visible={isModalVisible} animationType="slide" transparent={false}>
+      <Modal
+        visible={isModalVisible}
+        animationType="slide"
+        transparent={false}
+      >
         <ScrollView style={{ flex: 1, padding: 20 }}>
-          <View
-            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-          >
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text style={{ fontSize: 24, marginBottom: 20 }}>
-              {editingPost ? "게시글 수정" : "게시글 작성"}
+              {editingPost ? '게시글 수정' : '게시글 작성' }
             </Text>
           </View>
 
-          {image && (
-            <Image
-              source={{ uri: image }}
-              style={{ width: 100, height: 100, marginBottom: 10 }}
-            />
-          )}
+          {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, marginBottom: 10 }}/>}
           <Button title="이미지 업로드" onPress={pickImage} color="#8A2BE2" />
 
           <TextInput
@@ -336,12 +258,12 @@ export default function Board() {
           <TextInput
             style={{
               borderWidth: 1,
-              borderColor: "gray",
+              borderColor: 'gray',
               padding: 8,
               marginBottom: 10,
               minHeight: 230,
-              textAlign: "left",
-              textAlignVertical: "top",
+              textAlign: 'left',
+              textAlignVertical: 'top',
             }}
             placeholder="내용을 입력하세요"
             value={newContent}
@@ -349,14 +271,9 @@ export default function Board() {
             multiline={true}
           />
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.fullWidthButton}
-              onPress={editingPost ? updatePost : addPost}
-            >
-              <Text style={styles.fullWidthButtonText}>
-                {editingPost ? "수정" : "작성"}
-              </Text>
-            </TouchableOpacity>
+            <TouchableOpacity style={styles.fullWidthButton} onPress={editingPost ? updatePost : addPost}>
+                  <Text style={styles.fullWidthButtonText}>{editingPost ? '수정' : '작성'}</Text>
+                </TouchableOpacity>
           </View>
         </ScrollView>
       </Modal>
@@ -375,7 +292,7 @@ export default function Board() {
             <Text>3. 회원 간의 배려와 존중.</Text>
             <Text>4. 타인에 대한 비방 금지.</Text>
             <Text>5. 주제에 맞는 콘텐츠 작성.</Text>
-            <Text> </Text>
+            <Text>                       </Text>
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setGuideModalVisible(false)}
@@ -395,66 +312,58 @@ const formatDate = (timestamp) => {
   const timeDiff = Math.floor((currentDate - postDate) / (60 * 1000)); // 시간 차이를 분 단위로 계산
 
   const pad = (num) => {
-    return num < 10 ? "0" + num : num;
+    return num < 10 ? '0' + num : num;
   };
 
   if (timeDiff < 1) {
-    return "방금 전";
+    return '방금 전';
   } else if (timeDiff < 60) {
-    return `${timeDiff}분 전 / ${postDate.getFullYear()}.${pad(
-      postDate.getMonth() + 1
-    )}.${pad(postDate.getDate())}`;
+    return `${timeDiff}분 전 / ${postDate.getFullYear()}.${pad(postDate.getMonth() + 1)}.${pad(postDate.getDate())}`;
   } else if (timeDiff < 1440) {
-    return `${Math.floor(
-      timeDiff / 60
-    )}시간 전 / ${postDate.getFullYear()}.${pad(postDate.getMonth() + 1)}.${pad(
-      postDate.getDate()
-    )}`;
+    return `${Math.floor(timeDiff / 60)}시간 전 / ${postDate.getFullYear()}.${pad(postDate.getMonth() + 1)}.${pad(postDate.getDate())}`;
   } else {
-    return `${postDate.getFullYear()}.${pad(postDate.getMonth() + 1)}.${pad(
-      postDate.getDate()
-    )}`;
+    return `${postDate.getFullYear()}.${pad(postDate.getMonth() + 1)}.${pad(postDate.getDate())}`;
   }
 };
 
 const styles = StyleSheet.create({
   flatListItem: {
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: 'gray',
     borderRadius: 5,
     padding: 10,
     marginBottom: 5,
   },
   textInput: {
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: 'gray',
     padding: 8,
     marginBottom: 10,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
     marginBottom: 10,
   },
   searchInput: {
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: 'gray',
     padding: 8,
     marginBottom: 10,
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 35,
-    alignItems: "flex-start",
-    textAlign: "left", // 좌로 정렬
-    shadowColor: "#000",
+    alignItems: 'flex-start',
+    textAlign: 'left', // 좌로 정렬
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -465,39 +374,39 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+    fontWeight: 'bold',
     fontSize: 20,
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 5,
     right: 10,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     padding: 5,
     borderRadius: 5,
   },
   closeButtonText: {
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   fullWidthButton: {
-    width: "100%",
+    width: '100%',
     padding: 15,
-    backgroundColor: "#8A2BE2",
-    alignItems: "center",
+    backgroundColor: '#8A2BE2',
+    alignItems: 'center',
     borderRadius: 5,
   },
   fullWidthButton: {
-    width: "100%",
+    width: '100%',
     paddingVertical: 10, // 세로 패딩 값 조정
     paddingHorizontal: 15,
-    backgroundColor: "#8A2BE2",
-    alignItems: "center",
+    backgroundColor: '#8A2BE2',
+    alignItems: 'center',
     borderRadius: 5,
   },
   fullWidthButtonText: {
-    color: "white", // 흰색으로 변경
+    color: 'white', // 흰색으로 변경
     fontSize: 15,
   },
 });

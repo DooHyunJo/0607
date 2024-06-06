@@ -3,7 +3,8 @@ import { View, Text, Image, StyleSheet, Modal, TouchableOpacity, TextInput } fro
 import { Ionicons } from '@expo/vector-icons'; // Ionicons를 import
 
 const Detail = ({ route }) => {
-  const { title, category, keywords, content, purchase, trade, timestamp } = route.params;
+  const params = route?.params || {};
+  const { title, category, keywords, content, purchase, trade, timestamp } = params;
   const [imageUri, setImageUri] = useState(null);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [comment, setComment] = useState('');
@@ -11,7 +12,7 @@ const Detail = ({ route }) => {
   const [likes, setLikes] = useState(0); // State for keeping track of likes
 
   const getImageUri = async () => {
-    const imageUri = route.params.image;
+    const imageUri = params.image;
     setImageUri(imageUri);
   };
 
@@ -61,19 +62,19 @@ const Detail = ({ route }) => {
         <Text>  </Text>
         <Text style={styles.text}>{content}</Text>
       </View>
-      
+
       {/* Image */}
       {imageUri && (
         <TouchableOpacity onPress={toggleImageModal}>
           <Image source={{ uri: imageUri }} style={styles.image} />
         </TouchableOpacity>
       )}
-      
+
       {/* Image Modal */}
       <Modal visible={isImageModalVisible} transparent={true} onRequestClose={toggleImageModal}>
         <View style={styles.modalContainer}>
           <TouchableOpacity style={styles.closeButton} onPress={toggleImageModal}>
-            <Text style={styles.closeButtonText}> X </Text>
+            <Text style={styles.closeButtonText}>X</Text>
           </TouchableOpacity>
           <Image source={{ uri: imageUri }} style={styles.modalImage} />
         </View>
@@ -104,11 +105,9 @@ const Detail = ({ route }) => {
         <View style={styles.commentsContainer}>
           {comments.map((comment, index) => (
             <View key={index} style={styles.commentWrapper}>
-              <View style={styles.commentContainer}>
-                <View style={styles.commentContent}>
-                  <Text style={styles.commentText}>{comment.text}</Text>
-                  <Text style={styles.commentTimestamp}>{formatTimestamp(comment.timestamp)}</Text>
-                </View>
+              <View style={styles.commentContent}>
+                <Text style={styles.commentText}>{comment.text}</Text>
+                <Text style={styles.commentTimestamp}>{formatTimestamp(comment.timestamp)}</Text>
               </View>
             </View>
           ))}
@@ -148,7 +147,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 5,
   },
-
   modalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -189,14 +187,12 @@ const styles = StyleSheet.create({
   likeButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 5, 
+    marginLeft: 5,
   },
   likeButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: 'gray',
-  },
-  likeIcon: {
     marginLeft: 5, // 아이콘과 숫자 사이의 간격 조정
   },
   commentInputContainer: {
@@ -242,3 +238,4 @@ const styles = StyleSheet.create({
 });
 
 export default Detail;
+
